@@ -48,9 +48,14 @@
     <div class="add-form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" required />
       <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4" required></textarea>
-      <div class="add-form-row">
-        <button class="add-form-button">Написать</button>
-      </div>
+      <section class="buttonGroup">
+        <div class="add-form-row">
+          <button class="add-form-button">Написать</button>
+        </div>
+        <div class="add-form-row">
+          <button class="remove-form-button">Удалить последний комментарий</button>
+        </div>
+      </section>
     </div>
   </div>
 </body>
@@ -66,8 +71,11 @@
   const inputComment = document.querySelector('.add-form-text');
   const button = document.querySelector('.add-form-button');
   const formText = document.querySelector('.add-form');
+  const buttonRemove = document.querySelector('.remove-form-button');
+  const comments = document.querySelector('.comments');
   let arrayValue = [inputName, inputComment];
 
+  // Валидация формы
   function validateForm(arrayValue) {
     for (let i = 0; i < arrayValue.length; i++) {
 
@@ -83,7 +91,7 @@
     }
   }
 
-// Доп задание: Блокирование кнопки при незаполненных полях
+  // Доп задание: Блокирование кнопки при незаполненных полях
   for (let i = 0; i < arrayValue.length; i++) {
     arrayValue[i].addEventListener('input', function () {
       const allInputsFilled = Array.from(arrayValue).every(input => input.value.trim() !== '');
@@ -95,26 +103,87 @@
     });
   }
 
-  // inputName.addEventListener('input', function () {
-  //   if (inputName.value.trim() !== '') {
-  //     button.removeAttribute('disabled');
-  //   } else {
-  //     button.disabled = true;
-  //   }
-  // });
+  // Доп задание: срабатывание кода на Enter
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+      inputName.placeholder = PLACEHOLDER_NAME;
+      inputComment.placeholder = PLACEHOLDER_NAME;
+      inputName.classList.remove('error');
+      inputComment.classList.remove('error');
 
-  // function buttonDisabled() {
-  //   return (console.log(inputName.value))
-  // }
 
-  // buttonDisabled()
+      validateForm(arrayValue);
 
-  // if (inputName.value === "" || inputComment.value == "") {
-  //   button.disabled = true;
-  // } else {
-  //   button.removeAttribute('disabled');
-  // }
 
+      // Добавление комментария шаблонизатором
+      if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
+
+        function CommentEngineTemplate(comment) {
+
+          return {
+            tag: 'li',
+            cls: 'comment',
+            content: [
+              {
+                tag: 'div',
+                cls: 'comment-header',
+                content: [
+                  {
+                    tag: 'div',
+                    content: `${inputName.value}`
+                  },
+                  {
+                    tag: 'div',
+                    content: `${moment().format('DD.MM.YY HH:mm')}`
+                  },
+                ]
+              },
+              {
+                tag: 'div',
+                cls: 'comment-body',
+                content:
+                {
+                  tag: 'div',
+                  cls: 'comment-text',
+                  content: `${inputComment.value}`,
+                }
+              },
+              {
+                tag: 'div',
+                cls: 'comment-footer',
+                content:
+                {
+                  tag: 'div',
+                  cls: 'likes',
+                  content: [
+                    {
+                      tag: 'span',
+                      cls: 'likes-counter',
+                      content: `${Math.floor(Math.random() * 101)}`,
+                    },
+                    {
+                      tag: 'button',
+                      cls: 'like-button'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+
+        const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
+
+        const comments = document.querySelector('.comments');
+        comments.appendChild(cart)
+
+
+      }
+
+    }
+  })
+
+  //срабатывание кода на click
   button.addEventListener('click', (event) => {
     event.preventDefault();
 
@@ -128,7 +197,7 @@
     validateForm(arrayValue);
 
 
-
+    // Добавление комментария шаблонизатором
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
       function CommentEngineTemplate(comment) {
@@ -195,7 +264,15 @@
 
 
   })
+  
+  // Доп. задание: Добавление кнопки удаление последнего комментария
+  buttonRemove.addEventListener('click', (event) => {
+    event.preventDefault();
 
+    const lastChild = comments.lastElementChild;
+    lastChild.remove();
+
+  })
 </script>
 
 </html>
