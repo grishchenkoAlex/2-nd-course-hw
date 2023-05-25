@@ -46,24 +46,37 @@
       </li>
     </ul>
     <div class="add-form">
-      <input type="text" class="add-form-name" placeholder="Введите ваше имя" />
-      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"></textarea>
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" required />
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4" required></textarea>
       <div class="add-form-row">
         <button class="add-form-button">Написать</button>
       </div>
     </div>
   </div>
 </body>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="./template-engine.js"></script>
 <script>
-  inputName = document.querySelector('.add-form-name');
-  inputComment = document.querySelector('.add-form-text');
-  button = document.querySelector('.add-form-button');
+  const PLACEHOLDER_NAME = "Введите ваше имя";
+  const PLACEHOLDER_COMMENT = "Введите ваш коментарий";
+  const PLACEHOLDER_NAME__ERROR = "Поле имени обязательно для заполнения";
+  const PLACEHOLDER_COMMENT__ERROR = "Поле комментария обязательно для заполнения";
+
+  const inputName = document.querySelector('.add-form-name');
+  const inputComment = document.querySelector('.add-form-text');
+  const button = document.querySelector('.add-form-button');
+  const formText = document.querySelector('.add-form');
 
   function validateForm(arrayValue) {
     for (let i = 0; i < arrayValue.length; i++) {
-      if (arrayValue[i] == "") {
-        (i == 0) ? inputName.classList.add('error') : inputComment.classList.add('error');
+      if (arrayValue[i].value == "") {
+        if (i == 0) {
+          inputName.classList.add('error');
+          inputName.placeholder = PLACEHOLDER_NAME__ERROR;
+        } else {
+          inputComment.classList.add('error');
+          inputComment.placeholder = PLACEHOLDER_COMMENT__ERROR;
+        }
       }
     }
   }
@@ -71,11 +84,80 @@
   button.addEventListener('click', (event) => {
     event.preventDefault();
 
-    let arrayValue = [inputName.value, inputComment.value];
+    let arrayValue = [inputName, inputComment];
+    inputName.placeholder = PLACEHOLDER_NAME;
+    inputComment.placeholder = PLACEHOLDER_NAME;
     inputName.classList.remove('error');
     inputComment.classList.remove('error');
 
     validateForm(arrayValue);
+
+    
+
+    if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
+
+      function CommentEngineTemplate(comment) {
+
+        return {
+          tag: 'li',
+          cls: 'comment',
+          content: [
+            {
+              tag: 'div',
+              cls: 'comment-header',
+              content: [
+                {
+                  tag: 'div',
+                  content: `${inputName.value}`
+                },
+                {
+                  tag: 'div',
+                  content: `${moment().format('DD.MM.YY HH:mm')}`
+                },
+              ]
+            },
+            {
+              tag: 'div',
+              cls: 'comment-body',
+              content: 
+                {
+                  tag: 'div',
+                  cls: 'comment-text',
+                  content: `${inputComment.value}`,
+                }
+            },
+            {
+              tag: 'div',
+              cls: 'comment-footer',
+              content: 
+                {
+                  tag: 'div',
+                  cls: 'likes',
+                  content: [
+                    {
+                      tag: 'span',
+                      cls: 'likes-counter',
+                      content: `${Math.floor(Math.random() * 101)}`,
+                    },
+                    {
+                      tag: 'button',
+                      cls: 'like-button'
+                    }
+                  ]
+                }
+            }
+          ]
+        }
+      }
+
+      const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
+
+      const comments= document.querySelector('.comments');
+      comments.appendChild(cart)
+
+
+    }
+
 
   })
 
