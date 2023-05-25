@@ -66,9 +66,11 @@
   const inputComment = document.querySelector('.add-form-text');
   const button = document.querySelector('.add-form-button');
   const formText = document.querySelector('.add-form');
+  let arrayValue = [inputName, inputComment];
 
   function validateForm(arrayValue) {
     for (let i = 0; i < arrayValue.length; i++) {
+
       if (arrayValue[i].value == "") {
         if (i == 0) {
           inputName.classList.add('error');
@@ -81,18 +83,51 @@
     }
   }
 
+// Доп задание: Блокирование кнопки при незаполненных полях
+  for (let i = 0; i < arrayValue.length; i++) {
+    arrayValue[i].addEventListener('input', function () {
+      const allInputsFilled = Array.from(arrayValue).every(input => input.value.trim() !== '');
+      if (allInputsFilled) {
+        button.removeAttribute('disabled');
+      } else {
+        button.disabled = true;
+      }
+    });
+  }
+
+  // inputName.addEventListener('input', function () {
+  //   if (inputName.value.trim() !== '') {
+  //     button.removeAttribute('disabled');
+  //   } else {
+  //     button.disabled = true;
+  //   }
+  // });
+
+  // function buttonDisabled() {
+  //   return (console.log(inputName.value))
+  // }
+
+  // buttonDisabled()
+
+  // if (inputName.value === "" || inputComment.value == "") {
+  //   button.disabled = true;
+  // } else {
+  //   button.removeAttribute('disabled');
+  // }
+
   button.addEventListener('click', (event) => {
     event.preventDefault();
 
-    let arrayValue = [inputName, inputComment];
+
     inputName.placeholder = PLACEHOLDER_NAME;
     inputComment.placeholder = PLACEHOLDER_NAME;
     inputName.classList.remove('error');
     inputComment.classList.remove('error');
 
+
     validateForm(arrayValue);
 
-    
+
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
@@ -119,32 +154,32 @@
             {
               tag: 'div',
               cls: 'comment-body',
-              content: 
-                {
-                  tag: 'div',
-                  cls: 'comment-text',
-                  content: `${inputComment.value}`,
-                }
+              content:
+              {
+                tag: 'div',
+                cls: 'comment-text',
+                content: `${inputComment.value}`,
+              }
             },
             {
               tag: 'div',
               cls: 'comment-footer',
-              content: 
-                {
-                  tag: 'div',
-                  cls: 'likes',
-                  content: [
-                    {
-                      tag: 'span',
-                      cls: 'likes-counter',
-                      content: `${Math.floor(Math.random() * 101)}`,
-                    },
-                    {
-                      tag: 'button',
-                      cls: 'like-button'
-                    }
-                  ]
-                }
+              content:
+              {
+                tag: 'div',
+                cls: 'likes',
+                content: [
+                  {
+                    tag: 'span',
+                    cls: 'likes-counter',
+                    content: `${Math.floor(Math.random() * 101)}`,
+                  },
+                  {
+                    tag: 'button',
+                    cls: 'like-button'
+                  }
+                ]
+              }
             }
           ]
         }
@@ -152,7 +187,7 @@
 
       const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
 
-      const comments= document.querySelector('.comments');
+      const comments = document.querySelector('.comments');
       comments.appendChild(cart)
 
 
