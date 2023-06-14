@@ -10,24 +10,7 @@
 <body>
   <h1>Любимые цвета студентов</h1>
   <ul class="students" id="list">
-    <li class="student" data-color = "#ff2600">
-      <p class="student-name">
-        Глеб, любимый цвет
-        <span style="color: #ff2600;">#ff2600</span>
-      </p>
-    </li>
-    <li class="student" data-color = "#00f900">
-      <p class="student-name">
-        Иван, любимый цвет
-        <span style="color: #00f900;">#00f900</span>
-      </p>
-    </li>
-    <li class="student" data-color = "#0432ff"> 
-      <p class="student-name">
-        Люси, любимый цвет
-        <span style="color: #0432ff;"> #0432ff</span>
-      </p>
-    </li>
+    // Список рендерится из JS
   </ul>
 
   <div class="form">
@@ -51,18 +34,68 @@
   const nameInputElement = document.getElementById("name-input");
   const colorInputElement = document.getElementById("color-input");
 
+  const students = [
+    {
+      name: "Глеб",
+      color: "#ff2600",
+    },
+    {
+      name: "Иван",
+      color: "#00f900",
+    },
+    {
+      name: "Люси",
+      color: "#0432ff",
+    },
+  ]
+
+  const renderStudents = () => {
+    const studentsHtml = students.map((student) => {
+      return `<li class="student" data-color = "${student.color}">
+        <p class="student-name">
+          ${student.name}, любимый цвет
+          <span style="color: ${student.color}"> ${student.color}</span>
+        </p>
+        <button class = "delete-button">Удалить</button>
+      </li>`
+    })
+      .join('');
+
+    listElement.innerHTML = studentsHtml;
+
+    initEventListener();
+    initDeleteButtonsListeners();
+  }
+
+  renderStudents();
+
   const initEventListener = () => {
     const studentElements = document.querySelectorAll(".student");
 
     for (const studentElement of studentElements) {
-      
+
       studentElement.addEventListener('click', () => {
         console.log(studentElement.dataset.color)
       })
     }
   }
 
-  initEventListener();
+  const initDeleteButtonsListeners = () => {
+    const deleteButtons = document.querySelectorAll(".delete-button");
+
+    for (const deleteButton of deleteButtons) {
+
+      deleteButton.addEventListener('click', () => {
+        console.log('Delete Elements')
+        // План удаления
+        // 1. Мы храним список студентов в JS массиве
+        // 2. При клике мы удаляем нужный элемент из массива
+        // 3. На основе нового массива в JS формируем html разметку списка
+      })
+    }
+  }
+
+
 
   buttonElement.addEventListener("click", () => {
     nameInputElement.classList.remove("input-error");
@@ -72,17 +105,13 @@
       return;
     }
 
-    listElement.innerHTML =
-      listElement.innerHTML +
-      `<li class="student" data-color = "${colorInputElement.value}">
-        <p class="student-name">
-          ${nameInputElement.value}, любимый цвет
-          <span style="color: ${colorInputElement.value}"> ${colorInputElement.value}</span>
-        </p>
-      </li>`;
+    students.push({
+      name: nameInputElement.value,
+      color: colorInputElement.value,
+    })
 
-      initEventListener();
 
+    renderStudents();
     nameInputElement.value = "";
   });
 
@@ -90,7 +119,7 @@
   // 1. Добавить в разметку кнопку "удалить"
   // 2. Добавить на кнопки удаления обработчик клика
   // 3. Реализовать внутри обработчика удаление элементов
-  
+
 </script>
 
 </html>
