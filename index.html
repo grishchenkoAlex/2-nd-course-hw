@@ -72,7 +72,7 @@
         // 3. На основе нового массива в JS формируем html разметку списка
         const index = deleteButton.dataset.index;
         console.log(students[index])
-        students.splice(index,1)
+        students.splice(index, 1)
         renderStudents();
       });
 
@@ -81,17 +81,17 @@
 
   const renderStudents = () => {
     const studentsHtml = students
-    .map((student, index) => {
-      return `<li class="student" data-color = "${student.color}">
+      .map((student, index) => {
+        return `<li class="student" data-color = "${student.color}">
         <p class="student-name">
           ${student.name}, любимый цвет
           <span style="color: ${student.color}"> ${student.color}</span>
         </p>
         <button data-index="${index}" class = "delete-button">Удалить</button>
       </li>`;
-    })
+      })
       .join("");
-
+    
     listElement.innerHTML = studentsHtml;
 
     initEventListener();
