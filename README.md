@@ -1,6 +1,6 @@
 # Проект "Комментарии"
 
-https://glebkaf.github.io/webdev-dom-homework/
+https://grishchenkoalex.github.io/2-nd-course-hw/
 
 Верстка для учебного проекта студентов Skypro
 
