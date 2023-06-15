@@ -2,133 +2,277 @@
 <html>
 
 <head>
+  <title>Проект "Комменты"</title>
   <meta charset="utf-8" />
-  <title>Урок "Обработчики событий на динамических элементах разметки"</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <h1>Любимые цвета студентов</h1>
-  <ul class="students" id="list">
-    // Список рендерится из JS
-  </ul>
-
-  <div class="form">
-    <h3 class="form-title">Форма добавления</h3>
-    <div class="form-row">
-      Имя:&nbsp;&nbsp;
-      <input type="text" id="name-input" class="input" placeholder="Василий" />
+  <div class="container">
+    <ul class="comments">
+      <li class="comment">
+        <div class="comment-header">
+          <div>Глеб Фокин</div>
+          <div>12.02.22 12:18</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            Это будет первый комментарий на этой странице
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">3</span>
+            <button class="like-button"></button>
+          </div>
+        </div>
+      </li>
+      <li class="comment">
+        <div class="comment-header">
+          <div>Варвара Н.</div>
+          <div>13.02.22 19:22</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            Мне нравится как оформлена эта страница! ❤
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">75</span>
+            <button class="like-button -active-like"></button>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div class="add-form">
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" required />
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4" required></textarea>
+      <section class="buttonGroup">
+        <div class="add-form-row">
+          <button class="add-form-button">Написать</button>
+        </div>
+        <div class="add-form-row">
+          <button class="remove-form-button">Удалить последний комментарий</button>
+        </div>
+      </section>
     </div>
-    <div class="form-row">
-      Цвет:&nbsp;
-      <input type="color" id="color-input" class="color-input input" />
-      <br /><br />
-    </div>
-    <button class="button" id="add-button">Добавить</button>
   </div>
 </body>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="./template-engine.js"></script>
 <script>
-  const buttonElement = document.getElementById("add-button");
-  const listElement = document.getElementById("list");
-  const nameInputElement = document.getElementById("name-input");
-  const colorInputElement = document.getElementById("color-input");
+  const PLACEHOLDER_NAME = "Введите ваше имя";
+  const PLACEHOLDER_COMMENT = "Введите ваш коментарий";
+  const PLACEHOLDER_NAME__ERROR = "Поле имени обязательно для заполнения";
+  const PLACEHOLDER_COMMENT__ERROR = "Поле комментария обязательно для заполнения";
 
-  const students = [
-    {
-      name: "Глеб",
-      color: "#ff2600",
-    },
-    {
-      name: "Иван",
-      color: "#00f900",
-    },
-    {
-      name: "Люси",
-      color: "#0432ff",
-    },
-  ]
+  const inputName = document.querySelector('.add-form-name');
+  const inputComment = document.querySelector('.add-form-text');
+  const button = document.querySelector('.add-form-button');
+  const formText = document.querySelector('.add-form');
+  const buttonRemove = document.querySelector('.remove-form-button');
+  const comments = document.querySelector('.comments');
+  let arrayValue = [inputName, inputComment];
 
-  const initEventListener = () => {
-    const studentElements = document.querySelectorAll(".student");
+  // Валидация формы
+  function validateForm(arrayValue) {
+    for (let i = 0; i < arrayValue.length; i++) {
 
-    for (const studentElement of studentElements) {
-
-      studentElement.addEventListener('click', () => {
-        console.log(studentElement.dataset.color)
-      })
+      if (arrayValue[i].value == "") {
+        if (i == 0) {
+          inputName.classList.add('error');
+          inputName.placeholder = PLACEHOLDER_NAME__ERROR;
+        } else {
+          inputComment.classList.add('error');
+          inputComment.placeholder = PLACEHOLDER_COMMENT__ERROR;
+        }
+      }
     }
   }
 
-  const initDeleteButtonsListeners = () => {
-    const deleteButtons = document.querySelectorAll(".delete-button");
-    console.log('hell')
-
-    for (const deleteButton of deleteButtons) {
-      deleteButton.addEventListener('click', () => {
-        // План удаления
-        // 1. Мы храним список студентов в JS массиве
-        // 2. При клике мы удаляем нужный элемент из массива
-        // 3. На основе нового массива в JS формируем html разметку списка
-        const index = deleteButton.dataset.index;
-        console.log(students[index])
-        students.splice(index,1)
-        renderStudents();
-      });
-
-    }
+  // Доп задание: Блокирование кнопки при незаполненных полях
+  for (let i = 0; i < arrayValue.length; i++) {
+    arrayValue[i].addEventListener('input', function () {
+      const allInputsFilled = Array.from(arrayValue).every(input => input.value.trim() !== '');
+      if (allInputsFilled) {
+        button.removeAttribute('disabled');
+      } else {
+        button.disabled = true;
+      }
+    });
   }
 
-  const renderStudents = () => {
-    const studentsHtml = students
-    .map((student, index) => {
-      return `<li class="student" data-color = "${student.color}">
-        <p class="student-name">
-          ${student.name}, любимый цвет
-          <span style="color: ${student.color}"> ${student.color}</span>
-        </p>
-        <button data-index="${index}" class = "delete-button">Удалить</button>
-      </li>`;
-    })
-      .join("");
-
-    listElement.innerHTML = studentsHtml;
-
-    initEventListener();
-    initDeleteButtonsListeners();
-  }
-
-  renderStudents();
+  // Доп задание: срабатывание кода на Enter
+  document.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+      inputName.placeholder = PLACEHOLDER_NAME;
+      inputComment.placeholder = PLACEHOLDER_NAME;
+      inputName.classList.remove('error');
+      inputComment.classList.remove('error');
 
 
+      validateForm(arrayValue);
 
 
+      // Добавление комментария шаблонизатором
+      if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
+
+        function CommentEngineTemplate(comment) {
+
+          return {
+            tag: 'li',
+            cls: 'comment',
+            content: [
+              {
+                tag: 'div',
+                cls: 'comment-header',
+                content: [
+                  {
+                    tag: 'div',
+                    content: `${inputName.value}`
+                  },
+                  {
+                    tag: 'div',
+                    content: `${moment().format('DD.MM.YY HH:mm')}`
+                  },
+                ]
+              },
+              {
+                tag: 'div',
+                cls: 'comment-body',
+                content:
+                {
+                  tag: 'div',
+                  cls: 'comment-text',
+                  content: `${inputComment.value}`,
+                }
+              },
+              {
+                tag: 'div',
+                cls: 'comment-footer',
+                content:
+                {
+                  tag: 'div',
+                  cls: 'likes',
+                  content: [
+                    {
+                      tag: 'span',
+                      cls: 'likes-counter',
+                      content: `${Math.floor(Math.random() * 101)}`,
+                    },
+                    {
+                      tag: 'button',
+                      cls: 'like-button'
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+
+        const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
+
+        const comments = document.querySelector('.comments');
+        comments.appendChild(cart)
 
 
+      }
 
-  buttonElement.addEventListener("click", () => {
-    nameInputElement.classList.remove("input-error");
+    }
+  })
 
-    if (nameInputElement.value === "") {
-      nameInputElement.classList.add("input-error");
-      return;
+  //срабатывание кода на click
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+
+
+    inputName.placeholder = PLACEHOLDER_NAME;
+    inputComment.placeholder = PLACEHOLDER_NAME;
+    inputName.classList.remove('error');
+    inputComment.classList.remove('error');
+
+
+    validateForm(arrayValue);
+
+
+    // Добавление комментария шаблонизатором
+    if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
+
+      function CommentEngineTemplate(comment) {
+
+        return {
+          tag: 'li',
+          cls: 'comment',
+          content: [
+            {
+              tag: 'div',
+              cls: 'comment-header',
+              content: [
+                {
+                  tag: 'div',
+                  content: `${inputName.value}`
+                },
+                {
+                  tag: 'div',
+                  content: `${moment().format('DD.MM.YY HH:mm')}`
+                },
+              ]
+            },
+            {
+              tag: 'div',
+              cls: 'comment-body',
+              content:
+              {
+                tag: 'div',
+                cls: 'comment-text',
+                content: `${inputComment.value}`,
+              }
+            },
+            {
+              tag: 'div',
+              cls: 'comment-footer',
+              content:
+              {
+                tag: 'div',
+                cls: 'likes',
+                content: [
+                  {
+                    tag: 'span',
+                    cls: 'likes-counter',
+                    content: `${Math.floor(Math.random() * 101)}`,
+                  },
+                  {
+                    tag: 'button',
+                    cls: 'like-button'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+
+      const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
+
+      const comments = document.querySelector('.comments');
+      comments.appendChild(cart)
+
+
     }
 
-    students.push({
-      name: nameInputElement.value,
-      color: colorInputElement.value,
-    })
 
+  })
+  
+  // Доп. задание: Добавление кнопки удаление последнего комментария
+  buttonRemove.addEventListener('click', (event) => {
+    event.preventDefault();
 
-    renderStudents();
-    nameInputElement.value = "";
-  });
+    const lastChild = comments.lastElementChild;
+    lastChild.remove();
 
-  // Удаление элемента списка:
-  // 1. Добавить в разметку кнопку "удалить"
-  // 2. Добавить на кнопки удаления обработчик клика
-  // 3. Реализовать внутри обработчика удаление элементов
-
+  })
 </script>
 
 </html>
