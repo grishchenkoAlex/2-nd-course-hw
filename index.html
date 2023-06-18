@@ -10,40 +10,7 @@
 <body>
   <div class="container">
     <ul class="comments">
-      <li class="comment">
-        <div class="comment-header">
-          <div>Глеб Фокин</div>
-          <div>12.02.22 12:18</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            Это будет первый комментарий на этой странице
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">3</span>
-            <button class="like-button"></button>
-          </div>
-        </div>
-      </li>
-      <li class="comment">
-        <div class="comment-header">
-          <div>Варвара Н.</div>
-          <div>13.02.22 19:22</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            Мне нравится как оформлена эта страница! ❤
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">75</span>
-            <button class="like-button -active-like"></button>
-          </div>
-        </div>
-      </li>
+
     </ul>
     <div class="add-form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" required />
@@ -61,6 +28,7 @@
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="./template-engine.js"></script>
+
 <script>
   const PLACEHOLDER_NAME = "Введите ваше имя";
   const PLACEHOLDER_COMMENT = "Введите ваш коментарий";
@@ -75,7 +43,99 @@
   const comments = document.querySelector('.comments');
   let arrayValue = [inputName, inputComment];
 
-  // Валидация формы
+  const commentsElements = [
+    {
+      name: "Глеб Фокин",
+      date: "12.02.22 12:18",
+      text: "Это будет первый комментарий на этой странице",
+      like: false,
+      likeCount: 3,
+      likeClass: "like-button"
+    },
+    {
+      name: "Варвара Н.",
+      date: "13.02.22 19:22",
+      text: "Мне нравится как оформлена эта страница! ❤",
+      like: false,
+      likeCount: 30,
+      likeClass: "like-button",
+    },
+  ];
+
+  function validateForm(arrayValue) {
+    for (let i = 0; i < arrayValue.length; i++) {
+      if (arrayValue[i].value == "") {
+        if (i == 0) {
+          inputName.classList.add('error');
+          inputName.placeholder = PLACEHOLDER_NAME__ERROR;
+        } else {
+          inputComment.classList.add('error');
+          inputComment.placeholder = PLACEHOLDER_COMMENT__ERROR;
+        }
+      }
+    }
+  }
+
+  const initEventListener = () => {
+
+    const likeButtonElement = document.querySelectorAll(".likes")
+    const likeButtons = document.querySelectorAll(".like-button")
+
+    for (const likeButton of likeButtons) {
+
+      likeButton.addEventListener('click', () => {
+
+        const index = likeButton.dataset.index;
+
+        if (commentsElements[index].like) {
+          commentsElements[index].like = false;
+          --commentsElements[index].likeCount;
+          commentsElements[index].likeClass = "like-button"
+
+          renderComments();
+        } else {
+          commentsElements[index].like = true;
+          ++commentsElements[index].likeCount;
+          commentsElements[index].likeClass = "like-button -active-like"
+
+          renderComments();
+        }
+      })
+    }
+  }
+
+// Отрисовка комментариев (Рендер функция)
+  const renderComments = () => {
+    const commentsHtml = commentsElements
+      .map((comment, index) => {
+        return `<li class="comment">
+        <div class="comment-header">
+          <div>${comment.name}</div>
+          <div>${comment.date}</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            ${comment.text}
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div  class="likes">
+            <span class="likes-counter">${comment.likeCount}</span>
+            <button data-like=${comment.like} data-index = "${index}" class="${comment.likeClass}"></button>
+          </div>
+        </div>
+      </li>`
+      })
+      .join("");
+
+
+    comments.innerHTML = commentsHtml;
+
+    initEventListener();
+  }
+  renderComments();
+
+
   function validateForm(arrayValue) {
     for (let i = 0; i < arrayValue.length; i++) {
 
@@ -103,168 +163,35 @@
     });
   }
 
-  // Доп задание: срабатывание кода на Enter
-  document.addEventListener('keyup', (event) => {
-    if (event.key === 'Enter') {
-      inputName.placeholder = PLACEHOLDER_NAME;
-      inputComment.placeholder = PLACEHOLDER_NAME;
-      inputName.classList.remove('error');
-      inputComment.classList.remove('error');
 
-
-      validateForm(arrayValue);
-
-
-      // Добавление комментария шаблонизатором
-      if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
-
-        function CommentEngineTemplate(comment) {
-
-          return {
-            tag: 'li',
-            cls: 'comment',
-            content: [
-              {
-                tag: 'div',
-                cls: 'comment-header',
-                content: [
-                  {
-                    tag: 'div',
-                    content: `${inputName.value}`
-                  },
-                  {
-                    tag: 'div',
-                    content: `${moment().format('DD.MM.YY HH:mm')}`
-                  },
-                ]
-              },
-              {
-                tag: 'div',
-                cls: 'comment-body',
-                content:
-                {
-                  tag: 'div',
-                  cls: 'comment-text',
-                  content: `${inputComment.value}`,
-                }
-              },
-              {
-                tag: 'div',
-                cls: 'comment-footer',
-                content:
-                {
-                  tag: 'div',
-                  cls: 'likes',
-                  content: [
-                    {
-                      tag: 'span',
-                      cls: 'likes-counter',
-                      content: `${Math.floor(Math.random() * 101)}`,
-                    },
-                    {
-                      tag: 'button',
-                      cls: 'like-button'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-
-        const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
-
-        const comments = document.querySelector('.comments');
-        comments.appendChild(cart)
-
-
-      }
-
-    }
-  })
-
-  //срабатывание кода на click
+  // срабатывание кода на click
   button.addEventListener('click', (event) => {
-    event.preventDefault();
-
 
     inputName.placeholder = PLACEHOLDER_NAME;
     inputComment.placeholder = PLACEHOLDER_NAME;
     inputName.classList.remove('error');
     inputComment.classList.remove('error');
 
-
     validateForm(arrayValue);
 
-
-    // Добавление комментария шаблонизатором
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
-      function CommentEngineTemplate(comment) {
+      commentsElements.push({
+        name: inputName.value,
+        date: moment().format('DD.MM.YY HH:mm'),
+        text: inputComment.value,
+        like: false,
+        likeCount: 0,
+        likeClass: "like-button",
+      })
 
-        return {
-          tag: 'li',
-          cls: 'comment',
-          content: [
-            {
-              tag: 'div',
-              cls: 'comment-header',
-              content: [
-                {
-                  tag: 'div',
-                  content: `${inputName.value}`
-                },
-                {
-                  tag: 'div',
-                  content: `${moment().format('DD.MM.YY HH:mm')}`
-                },
-              ]
-            },
-            {
-              tag: 'div',
-              cls: 'comment-body',
-              content:
-              {
-                tag: 'div',
-                cls: 'comment-text',
-                content: `${inputComment.value}`,
-              }
-            },
-            {
-              tag: 'div',
-              cls: 'comment-footer',
-              content:
-              {
-                tag: 'div',
-                cls: 'likes',
-                content: [
-                  {
-                    tag: 'span',
-                    cls: 'likes-counter',
-                    content: `${Math.floor(Math.random() * 101)}`,
-                  },
-                  {
-                    tag: 'button',
-                    cls: 'like-button'
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      }
+      renderComments();
 
-      const cart = templateEngine(CommentEngineTemplate(arrayValue[0]));
-
-      const comments = document.querySelector('.comments');
-      comments.appendChild(cart)
-
-
+      inputName.value = "";
+      inputComment.value = "";
     }
-
-
   })
-  
+
   // Доп. задание: Добавление кнопки удаление последнего комментария
   buttonRemove.addEventListener('click', (event) => {
     event.preventDefault();
@@ -273,6 +200,7 @@
     lastChild.remove();
 
   })
+
 </script>
 
 </html>
