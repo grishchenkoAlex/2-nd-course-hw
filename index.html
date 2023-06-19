@@ -114,25 +114,10 @@
       commentElement.addEventListener('click', () => {
 
         const index = commentElement.dataset.index;
-
-        inputComment.value = `>${commentsObject[index].text}
+        inputComment.value = `|${commentsObject[index].text}
         
-${commentsObject[index].name}`;
+${commentsObject[index].name}|`;
 
-
-        // if (commentsObject[index].like) {
-        //   commentsObject[index].like = false;
-        //   --commentsObject[index].likeCount;
-        //   commentsObject[index].likeClass = "like-button";
-
-        //   renderComments();
-        // } else {
-        //   commentsObject[index].like = true;
-        //   ++commentsObject[index].likeCount;
-        //   commentsObject[index].likeClass = "like-button -active-like";
-
-        //   renderComments();
-        // }
       })
     }
   }
@@ -216,10 +201,12 @@ ${commentsObject[index].name}`;
         name: inputName.value,
         date: moment().format('DD.MM.YY HH:mm'),
         text: inputComment.value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;"),
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replace("|", "<div class='blockquote-2'>")
+          .replace("|", "</div>"),
         like: false,
         likeCount: 0,
         likeClass: "like-button",
