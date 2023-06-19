@@ -43,7 +43,7 @@
   const comments = document.querySelector('.comments');
   let arrayValue = [inputName, inputComment];
 
-  const commentsElements = [
+  const commentsObject = [
     {
       name: "Глеб Фокин",
       date: "12.02.22 12:18",
@@ -75,39 +75,75 @@
       }
     }
   }
-
+  // Функционал простановки лайка
   const initEventListener = () => {
-
     const likeButtonElement = document.querySelectorAll(".likes")
     const likeButtons = document.querySelectorAll(".like-button")
 
     for (const likeButton of likeButtons) {
 
-      likeButton.addEventListener('click', () => {
+      likeButton.addEventListener('click', (event) => {
+
+        event.stopPropagation();
 
         const index = likeButton.dataset.index;
 
-        if (commentsElements[index].like) {
-          commentsElements[index].like = false;
-          --commentsElements[index].likeCount;
-          commentsElements[index].likeClass = "like-button"
-
-          renderComments();
+        if (commentsObject[index].like) {
+          commentsObject[index].like = false;
+          --commentsObject[index].likeCount;
+          commentsObject[index].likeClass = "like-button"
         } else {
-          commentsElements[index].like = true;
-          ++commentsElements[index].likeCount;
-          commentsElements[index].likeClass = "like-button -active-like"
-
-          renderComments();
+          commentsObject[index].like = true;
+          ++commentsObject[index].likeCount;
+          commentsObject[index].likeClass = "like-button -active-like"
         }
+
+        renderComments();
       })
     }
   }
-// Отрисовка комментариев (Рендер функция)
+
+  // Функционал ответа на комментрарии
+  const addCommentListener = () => {
+
+    const commentsElement = document.querySelectorAll(".comment");
+
+
+    for (const commentElement of commentsElement) {
+
+      commentElement.addEventListener('click', () => {
+
+        const index = commentElement.dataset.index;
+
+        inputComment.value = `>${commentsObject[index].text}
+        
+${commentsObject[index].name}`;
+
+
+        // if (commentsObject[index].like) {
+        //   commentsObject[index].like = false;
+        //   --commentsObject[index].likeCount;
+        //   commentsObject[index].likeClass = "like-button";
+
+        //   renderComments();
+        // } else {
+        //   commentsObject[index].like = true;
+        //   ++commentsObject[index].likeCount;
+        //   commentsObject[index].likeClass = "like-button -active-like";
+
+        //   renderComments();
+        // }
+      })
+    }
+  }
+
+
+
+  // Отрисовка комментариев (Рендер функция)
   const renderComments = () => {
-    const commentsHtml = commentsElements
+    const commentsHtml = commentsObject
       .map((comment, index) => {
-        return `<li class="comment">
+        return `<li class="comment" data-index = "${index}">
         <div class="comment-header">
           <div>${comment.name}</div>
           <div>${comment.date}</div>
@@ -131,6 +167,7 @@
     comments.innerHTML = commentsHtml;
 
     initEventListener();
+    addCommentListener();
   }
   renderComments();
 
@@ -175,10 +212,14 @@
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
-      commentsElements.push({
+      commentsObject.push({
         name: inputName.value,
         date: moment().format('DD.MM.YY HH:mm'),
-        text: inputComment.value,
+        text: inputComment.value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
         like: false,
         likeCount: 0,
         likeClass: "like-button",
