@@ -114,9 +114,9 @@
       commentElement.addEventListener('click', () => {
 
         const index = commentElement.dataset.index;
-        inputComment.value = `|${commentsObject[index].text}
+        inputComment.value = `${commentsObject[index].text}
         
-${commentsObject[index].name}|`;
+${commentsObject[index].name}`;
 
       })
     }
@@ -198,15 +198,17 @@ ${commentsObject[index].name}|`;
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
       commentsObject.push({
-        name: inputName.value,
-        date: moment().format('DD.MM.YY HH:mm'),
-        text: inputComment.value
+        name: inputName.value
           .replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replace("|", "<div class='blockquote-2'>")
-          .replace("|", "</div>"),
+          .replaceAll('"', "&quot;"),
+        date: moment().format('DD.MM.YY HH:mm'),
+        text: ["%", inputComment.value
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")].join(" "),
         like: false,
         likeCount: 0,
         likeClass: "like-button",
