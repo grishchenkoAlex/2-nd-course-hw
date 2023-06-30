@@ -114,7 +114,7 @@
       commentElement.addEventListener('click', () => {
 
         const index = commentElement.dataset.index;
-        inputComment.value = `${commentsObject[index].text}
+        inputComment.value = `% ${commentsObject[index].text}
         
 ${commentsObject[index].name}`;
 
@@ -204,11 +204,11 @@ ${commentsObject[index].name}`;
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;"),
         date: moment().format('DD.MM.YY HH:mm'),
-        text: ["%", inputComment.value
+        text: inputComment.value
           .replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")].join(" "),
+          .replaceAll('"', "&quot;"),
         like: false,
         likeCount: 0,
         likeClass: "like-button",
