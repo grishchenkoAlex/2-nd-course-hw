@@ -34,6 +34,38 @@
   const nameInputElement = document.getElementById("name-input");
   const colorInputElement = document.getElementById("color-input");
 
+// Запросы в API - асинхронные, мы не знаем как долго будет выполняться запрос
+  // Запрос может выполняться секунды и даже минуты
+  const fetchPromise = fetch(
+    "https://webdev-hw-api.vercel.app/api/todos",
+    {
+      method: "GET",
+    }
+  )
+
+  fetchPromise.then((response) => {
+    const jsonPromise = response.json();
+
+    jsonPromise.then((responseData) => {
+       tasks = responseData.todos;
+      console.log(tasks)
+      // renderStudents();
+    })
+  })
+
+  let tasks = [
+    {
+      text: "Что-то",
+    },
+    {
+      text: "Что-то",
+    },
+    {
+      text: "Что-то",
+    }
+  ] 
+
+  // TODO: Данный массив, необходимо получать из хранилища данных
   const students = [
     {
       name: "Глеб",
@@ -49,6 +81,9 @@
     },
   ]
 
+  
+
+
   const initEventListener = () => {
     const studentElements = document.querySelectorAll(".student");
 
@@ -62,7 +97,6 @@
 
   const initDeleteButtonsListeners = () => {
     const deleteButtons = document.querySelectorAll(".delete-button");
-    console.log('hell')
 
     for (const deleteButton of deleteButtons) {
       deleteButton.addEventListener('click', () => {
@@ -72,6 +106,7 @@
         // 3. На основе нового массива в JS формируем html разметку списка
         const index = deleteButton.dataset.index;
         console.log(students[index])
+        // TODO: Удалять из хранилища данных
         students.splice(index, 1)
         renderStudents();
       });
@@ -91,7 +126,7 @@
       </li>`;
       })
       .join("");
-    
+
     listElement.innerHTML = studentsHtml;
 
     initEventListener();
@@ -114,11 +149,11 @@
       return;
     }
 
+    // TODO: Добавлять задачу в хранилище данных
     students.push({
       name: nameInputElement.value,
       color: colorInputElement.value,
     })
-
 
     renderStudents();
     nameInputElement.value = "";
