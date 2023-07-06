@@ -44,7 +44,7 @@
   let arrayValue = [inputName, inputComment];
 
   const fetchPromise = fetch(
-    "https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments",
+    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments",
     {
       method: "GET",
     }
@@ -208,7 +208,7 @@ ${commentsObject[index].name}`;
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
-      fetch("https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments", {
+      fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments", {
         method: "POST", 
         body: JSON.stringify({
           "text": inputComment.value, "name": inputName.value
@@ -220,7 +220,7 @@ ${commentsObject[index].name}`;
       });
 
       const fetchPromise2 = fetch(
-        "https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments",
+        "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments",
         {
           method: "GET",
         }
