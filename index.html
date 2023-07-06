@@ -43,6 +43,11 @@
   const comments = document.querySelector('.comments');
   let arrayValue = [inputName, inputComment];
 
+
+  let CommentPreview = document.createElement('div');
+  CommentPreview.innerHTML = 'Комментарии загружаются';
+  comments.appendChild(CommentPreview)
+
   const fetchPromise = fetch(
     "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments",
     {
@@ -62,8 +67,10 @@
           likeClass: "like-button"
         };
       })
-
       renderComments();
+    })
+    .then(() => {
+      comments.removeChild(CommentPreview);
     })
 
   function validateForm(arrayValue) {
@@ -211,9 +218,9 @@ ${commentsObject[index].name}`;
       })
         .then((responseData) => {
           return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments",
-          {
-            method: "GET",
-          });
+            {
+              method: "GET",
+            });
         })
         .then((response) => {
           return response.json();
