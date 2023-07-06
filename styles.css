@@ -196,3 +196,6 @@ body {
 .blockquote-2 cite:before {
     content: '- ';
 }
+.hide {
+  display: none;
+}

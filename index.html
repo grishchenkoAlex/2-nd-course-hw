@@ -45,11 +45,11 @@
 
 
   let CommentPreview = document.createElement('div');
-  CommentPreview.innerHTML = 'Комментарии загружаются';
+  CommentPreview.textContent = 'Комментарии загружаются';
   comments.appendChild(CommentPreview)
 
   const fetchPromise = fetch(
-    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments",
+    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
     {
       method: "GET",
     }
@@ -208,6 +208,13 @@ ${commentsObject[index].name}`;
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
+
+      let CommentAddPreview = document.createElement('div');
+      CommentAddPreview.textContent = 'Комментарий добавляется';
+      formText.parentNode.insertBefore(CommentAddPreview, formText);
+      let parentElement = CommentAddPreview.parentNode;
+
+      formText.classList.add('hide');
       fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments", {
         method: "POST",
         body: JSON.stringify({
@@ -217,7 +224,7 @@ ${commentsObject[index].name}`;
         return response.json();
       })
         .then((responseData) => {
-          return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments",
+          return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
             {
               method: "GET",
             });
@@ -239,9 +246,10 @@ ${commentsObject[index].name}`;
 
           renderComments();
         })
-
-      renderComments();
-
+        .then(() => {
+          parentElement.removeChild(CommentAddPreview);
+          formText.classList.remove('hide');
+        })
 
       inputName.value = "";
       inputComment.value = "";
