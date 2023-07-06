@@ -26,8 +26,8 @@
     </div>
   </div>
 </body>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="./template-engine.js"></script>
 
 <script>
   const PLACEHOLDER_NAME = "Введите ваше имя";
@@ -43,24 +43,35 @@
   const comments = document.querySelector('.comments');
   let arrayValue = [inputName, inputComment];
 
-  const commentsObject = [
+  const fetchPromise = fetch(
+    "https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments",
     {
-      name: "Глеб Фокин",
-      date: "12.02.22 12:18",
-      text: "Это будет первый комментарий на этой странице",
-      like: false,
-      likeCount: 3,
-      likeClass: "like-button"
-    },
-    {
-      name: "Варвара Н.",
-      date: "13.02.22 19:22",
-      text: "Мне нравится как оформлена эта страница! ❤",
-      like: false,
-      likeCount: 30,
-      likeClass: "like-button",
-    },
-  ];
+      method: "GET",
+    }
+  )
+
+  fetchPromise.then((response) => {
+    const jsonPromise = response.json();
+
+    jsonPromise.then((responseData) => {
+
+
+      const commentsObjectAPI = responseData.comments.map(data => {
+        return {
+          name: data.author.name,
+          date: moment(data.date).format('DD.MM.YY HH:mm'),
+          text: data.text,
+          like: data.isLiked,
+          likeCount: data.likes,
+          likeClass: "like-button"
+        };
+      })
+      commentsObject = commentsObjectAPI;
+
+      renderComments();
+    })
+  })
+
 
   function validateForm(arrayValue) {
     for (let i = 0; i < arrayValue.length; i++) {
@@ -114,7 +125,7 @@
       commentElement.addEventListener('click', () => {
 
         const index = commentElement.dataset.index;
-        inputComment.value = `${commentsObject[index].text}
+        inputComment.value = `% ${commentsObject[index].text}
         
 ${commentsObject[index].name}`;
 
@@ -154,7 +165,7 @@ ${commentsObject[index].name}`;
     initEventListener();
     addCommentListener();
   }
-  renderComments();
+  // renderComments();
 
 
   function validateForm(arrayValue) {
@@ -197,24 +208,48 @@ ${commentsObject[index].name}`;
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
-      commentsObject.push({
-        name: inputName.value
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;"),
-        date: moment().format('DD.MM.YY HH:mm'),
-        text: ["%", inputComment.value
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")].join(" "),
-        like: false,
-        likeCount: 0,
-        likeClass: "like-button",
+      fetch("https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments", {
+        method: "POST", 
+        body: JSON.stringify({
+          "text": inputComment.value, "name": inputName.value
+        }),
+      }).then((response) => {
+        response.json().then((responseData) => {
+          console.log(responseData)
+        });
+      });
+
+      const fetchPromise2 = fetch(
+        "https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments",
+        {
+          method: "GET",
+        }
+      )
+
+      fetchPromise2.then((response) => {
+        const jsonPromise = response.json();
+
+        jsonPromise.then((responseData) => {
+
+
+          const commentsObjectAPI = responseData.comments.map(data => {
+            return {
+              name: data.author.name,
+              date: moment(data.date).format('DD.MM.YY HH:mm'),
+              text: data.text,
+              like: data.isLiked,
+              likeCount: data.likes,
+              likeClass: "like-button"
+            };
+          })
+          commentsObject = commentsObjectAPI;
+
+          renderComments();
+        })
       })
 
       renderComments();
+
 
       inputName.value = "";
       inputComment.value = "";
