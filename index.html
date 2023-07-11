@@ -43,20 +43,21 @@
   const comments = document.querySelector('.comments');
   let arrayValue = [inputName, inputComment];
 
+
+  let CommentPreview = document.createElement('div');
+  CommentPreview.textContent = 'Комментарии загружаются';
+  comments.appendChild(CommentPreview)
+
   const fetchPromise = fetch(
-    "https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments",
+    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
     {
       method: "GET",
     }
-  )
-
-  fetchPromise.then((response) => {
-    const jsonPromise = response.json();
-
-    jsonPromise.then((responseData) => {
-
-
-      const commentsObjectAPI = responseData.comments.map(data => {
+  ).then((response) => {
+    return response.json();
+  })
+    .then((responseData) => {
+      commentsObject = responseData.comments.map(data => {
         return {
           name: data.author.name,
           date: moment(data.date).format('DD.MM.YY HH:mm'),
@@ -66,12 +67,11 @@
           likeClass: "like-button"
         };
       })
-      commentsObject = commentsObjectAPI;
-
       renderComments();
     })
-  })
-
+    .then(() => {
+      comments.removeChild(CommentPreview);
+    })
 
   function validateForm(arrayValue) {
     for (let i = 0; i < arrayValue.length; i++) {
@@ -208,31 +208,32 @@ ${commentsObject[index].name}`;
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
-      fetch("https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments", {
-        method: "POST", 
+
+      let CommentAddPreview = document.createElement('div');
+      CommentAddPreview.textContent = 'Комментарий добавляется';
+      formText.parentNode.insertBefore(CommentAddPreview, formText);
+      let parentElement = CommentAddPreview.parentNode;
+
+      formText.classList.add('hide');
+      fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments", {
+        method: "POST",
         body: JSON.stringify({
           "text": inputComment.value, "name": inputName.value
         }),
       }).then((response) => {
-        response.json().then((responseData) => {
-          console.log(responseData)
-        });
-      });
-
-      const fetchPromise2 = fetch(
-        "https://wedev-api.sky.pro/api/v1/:alex-grishchenko/comments",
-        {
-          method: "GET",
-        }
-      )
-
-      fetchPromise2.then((response) => {
-        const jsonPromise = response.json();
-
-        jsonPromise.then((responseData) => {
-
-
-          const commentsObjectAPI = responseData.comments.map(data => {
+        return response.json();
+      })
+        .then((responseData) => {
+          return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
+            {
+              method: "GET",
+            });
+        })
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseData) => {
+          commentsObject = responseData.comments.map(data => {
             return {
               name: data.author.name,
               date: moment(data.date).format('DD.MM.YY HH:mm'),
@@ -242,14 +243,13 @@ ${commentsObject[index].name}`;
               likeClass: "like-button"
             };
           })
-          commentsObject = commentsObjectAPI;
 
           renderComments();
         })
-      })
-
-      renderComments();
-
+        .then(() => {
+          parentElement.removeChild(CommentAddPreview);
+          formText.classList.remove('hide');
+        })
 
       inputName.value = "";
       inputComment.value = "";
