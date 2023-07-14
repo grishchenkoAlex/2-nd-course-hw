@@ -108,9 +108,15 @@
       .then((responseData) => {
         tasks = responseData.todos;
         renderTasks();
+        textInputElement.value = "";
+
+      })
+      .catch((error) => {
+        alert("Кажется что-то пошло не так");
+      // Отправлять в систему сбора ошибок
+        console.warn(error);
       })
 
-    textInputElement.value = "";
   });
 </script>
 
