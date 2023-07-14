@@ -49,11 +49,12 @@
   comments.appendChild(CommentPreview)
 
   const fetchPromise = fetch(
-    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
+    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
     {
       method: "GET",
     }
   ).then((response) => {
+
     return response.json();
   })
     .then((responseData) => {
@@ -218,10 +219,15 @@ ${commentsObject[index].name}`;
       fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments", {
         method: "POST",
         body: JSON.stringify({
-          "text": inputComment.value, "name": inputName.value
+          "text": inputComment.value,
+          "name": inputName.value
         }),
       }).then((response) => {
-        return response.json();
+        if (response.status === 400) {
+          alert('Имя и комментарий не должны  быть короче трёх символов')
+        } else {
+          return response.json();
+        }
       })
         .then((responseData) => {
           return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
