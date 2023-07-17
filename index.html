@@ -54,8 +54,11 @@
       method: "GET",
     }
   ).then((response) => {
-
-    return response.json();
+    if (response.status === 500) {
+      alert('Сервер сломался, попробуй позже')
+    } else {
+      return response.json();
+    }
   })
     .then((responseData) => {
       commentsObject = responseData.comments.map(data => {
@@ -72,6 +75,9 @@
     })
     .then(() => {
       comments.removeChild(CommentPreview);
+    })
+    .catch(() => {
+      alert('Кажется, у вас сломался интернет, попробуйте позже')
     })
 
   function validateForm(arrayValue) {
@@ -217,8 +223,8 @@ ${commentsObject[index].name}`;
     inputComment.classList.remove('error');
 
     validateForm(arrayValue);
-    if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
+    if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
       let CommentAddPreview = document.createElement('div');
       CommentAddPreview.textContent = 'Комментарий добавляется';
@@ -231,7 +237,7 @@ ${commentsObject[index].name}`;
         body: JSON.stringify({
           "text": inputComment.value,
           "name": inputName.value,
-          forceError: false
+          forceError: true
         }),
       }).then((response) => {
         if (response.status === 400) {
@@ -239,6 +245,10 @@ ${commentsObject[index].name}`;
           inputName.value = textName;
           inputComment.value = textComment;
           // console.log(inputContent())
+        } else if (response.status === 500) {
+          alert('Сервер сломался, попробуй позже')
+          inputName.value = textName;
+          inputComment.value = textComment;
         } else {
           return response.json();
         }
@@ -269,6 +279,9 @@ ${commentsObject[index].name}`;
         .then(() => {
           parentElement.removeChild(CommentAddPreview);
           formText.classList.remove('hide');
+        })
+        .catch(() => {
+          alert('Кажется, у вас сломался интернет, попробуйте позже')
         })
 
       inputName.value = "";
