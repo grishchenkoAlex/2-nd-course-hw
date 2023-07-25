@@ -73,10 +73,8 @@
       })
       renderComments();
     })
-    .then(() => {
-      comments.removeChild(CommentPreview);
-    })
-    .catch(() => {
+    .catch((error) => {
+      console.error(error)
       alert('Кажется, у вас сломался интернет, попробуйте позже')
     })
 
