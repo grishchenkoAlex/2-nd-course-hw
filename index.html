@@ -49,12 +49,16 @@
   comments.appendChild(CommentPreview)
 
   const fetchPromise = fetch(
-    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
+    "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
     {
       method: "GET",
     }
   ).then((response) => {
-    return response.json();
+    if (response.status === 500) {
+      alert('Сервер сломался, попробуй позже')
+    } else {
+      return response.json();
+    }
   })
     .then((responseData) => {
       commentsObject = responseData.comments.map(data => {
@@ -69,8 +73,9 @@
       })
       renderComments();
     })
-    .then(() => {
-      comments.removeChild(CommentPreview);
+    .catch((error) => {
+      console.error(error)
+      alert('Кажется, у вас сломался интернет, попробуйте позже')
     })
 
   function validateForm(arrayValue) {
@@ -195,6 +200,17 @@ ${commentsObject[index].name}`;
     });
   }
 
+  let textName = '';
+  let textComment = '';
+
+  inputName.addEventListener('input', (event) => {
+    textName = event.target.value;
+  })
+
+  inputComment.addEventListener('input', (event) => {
+    textComment = event.target.value;
+  })
+
 
   // срабатывание кода на click
   button.addEventListener('click', (event) => {
@@ -208,23 +224,35 @@ ${commentsObject[index].name}`;
 
     if (!inputName.classList.contains('error') && !inputComment.classList.contains('error')) {
 
-
       let CommentAddPreview = document.createElement('div');
       CommentAddPreview.textContent = 'Комментарий добавляется';
       formText.parentNode.insertBefore(CommentAddPreview, formText);
       let parentElement = CommentAddPreview.parentNode;
 
       formText.classList.add('hide');
-      fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko/comments", {
+      fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments", {
         method: "POST",
         body: JSON.stringify({
-          "text": inputComment.value, "name": inputName.value
+          "text": inputComment.value,
+          "name": inputName.value,
+          forceError: true
         }),
       }).then((response) => {
-        return response.json();
+        if (response.status === 400) {
+          alert('Имя и комментарий не должны  быть короче трёх символов')
+          inputName.value = textName;
+          inputComment.value = textComment;
+          // console.log(inputContent())
+        } else if (response.status === 500) {
+          alert('Сервер сломался, попробуй позже')
+          inputName.value = textName;
+          inputComment.value = textComment;
+        } else {
+          return response.json();
+        }
       })
         .then((responseData) => {
-          return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw6/comments",
+          return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
             {
               method: "GET",
             });
@@ -249,6 +277,9 @@ ${commentsObject[index].name}`;
         .then(() => {
           parentElement.removeChild(CommentAddPreview);
           formText.classList.remove('hide');
+        })
+        .catch(() => {
+          alert('Кажется, у вас сломался интернет, попробуйте позже')
         })
 
       inputName.value = "";
