@@ -16,6 +16,17 @@ let CommentPreview = document.createElement('div');
 CommentPreview.textContent = 'Комментарии загружаются';
 comments.appendChild(CommentPreview)
 
+function formatTime(time) {
+    const date = new Date(time);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
 const fetchPromise = fetch(
     "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
     {
@@ -32,7 +43,7 @@ const fetchPromise = fetch(
         commentsObject = responseData.comments.map(data => {
             return {
                 name: data.author.name,
-                date: moment(data.date).format('DD.MM.YY HH:mm'),
+                date: formatTime(data.date),
                 text: data.text,
                 like: data.isLiked,
                 likeCount: data.likes,
@@ -99,8 +110,8 @@ const addCommentListener = () => {
 
             const index = commentElement.dataset.index;
             inputComment.value = `% ${commentsObject[index].text}
-        
-${commentsObject[index].name}`;
+          
+  ${commentsObject[index].name}`;
 
         })
     }
@@ -113,22 +124,22 @@ const renderComments = () => {
     const commentsHtml = commentsObject
         .map((comment, index) => {
             return `<li class="comment" data-index = "${index}">
-        <div class="comment-header">
-          <div>${comment.name}</div>
-          <div>${comment.date}</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            ${comment.text}
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.date}</div>
           </div>
-        </div>
-        <div class="comment-footer">
-          <div  class="likes">
-            <span class="likes-counter">${comment.likeCount}</span>
-            <button data-like=${comment.like} data-index = "${index}" class="${comment.likeClass}"></button>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${comment.text}
+            </div>
           </div>
-        </div>
-      </li>`
+          <div class="comment-footer">
+            <div  class="likes">
+              <span class="likes-counter">${comment.likeCount}</span>
+              <button data-like=${comment.like} data-index = "${index}" class="${comment.likeClass}"></button>
+            </div>
+          </div>
+        </li>`
         })
         .join("");
 
@@ -141,20 +152,22 @@ const renderComments = () => {
 // renderComments();
 
 
-function validateForm(arrayValue) {
-    for (let i = 0; i < arrayValue.length; i++) {
+// function validateForm(arrayValue) {
+//     for (let i = 0; i < arrayValue.length; i++) {
 
-        if (arrayValue[i].value == "") {
-            if (i == 0) {
-                inputName.classList.add('error');
-                inputName.placeholder = PLACEHOLDER_NAME__ERROR;
-            } else {
-                inputComment.classList.add('error');
-                inputComment.placeholder = PLACEHOLDER_COMMENT__ERROR;
-            }
-        }
-    }
-}
+//         if (arrayValue[i].value == "") {
+//             if (i == 0) {
+//                 inputName.classList.add('error');
+//                 inputName.placeholder = PLACEHOLDER_NAME__ERROR;
+//             } else {
+//                 inputComment.classList.add('error');
+//                 inputComment.placeholder = PLACEHOLDER_COMMENT__ERROR;
+//             }
+//         }
+//     }
+// }
+
+
 
 // Доп задание: Блокирование кнопки при незаполненных полях
 for (let i = 0; i < arrayValue.length; i++) {
@@ -232,7 +245,7 @@ button.addEventListener('click', (event) => {
                 commentsObject = responseData.comments.map(data => {
                     return {
                         name: data.author.name,
-                        date: moment(data.date).format('DD.MM.YY HH:mm'),
+                        date: formatTime(data.date),
                         text: data.text,
                         like: data.isLiked,
                         likeCount: data.likes,
