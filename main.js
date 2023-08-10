@@ -10,7 +10,7 @@ const formText = document.querySelector('.add-form');
 const buttonRemove = document.querySelector('.remove-form-button');
 const comments = document.querySelector('.comments');
 let arrayValue = [inputName, inputComment];
-
+let commentsObject;
 
 let CommentPreview = document.createElement('div');
 CommentPreview.textContent = 'Комментарии загружаются';
@@ -40,6 +40,7 @@ const fetchPromise = fetch(
     }
 })
     .then((responseData) => {
+
         commentsObject = responseData.comments.map(data => {
             return {
                 name: data.author.name,
@@ -50,7 +51,7 @@ const fetchPromise = fetch(
                 likeClass: "like-button"
             };
         })
-        renderComments();
+        renderComments(commentsObject);
     })
     .catch((error) => {
         console.error(error)
@@ -58,6 +59,7 @@ const fetchPromise = fetch(
     })
 
 function validateForm(arrayValue) {
+    
     for (let i = 0; i < arrayValue.length; i++) {
         if (arrayValue[i].value == "") {
             if (i == 0) {
@@ -92,8 +94,7 @@ const initEventListener = () => {
                 ++commentsObject[index].likeCount;
                 commentsObject[index].likeClass = "like-button -active-like"
             }
-
-            renderComments();
+            renderComments(commentsObject);
         })
     }
 }
@@ -120,7 +121,7 @@ const addCommentListener = () => {
 
 
 // Отрисовка комментариев (Рендер функция)
-const renderComments = () => {
+const renderComments = (commentsObject) => {
     const commentsHtml = commentsObject
         .map((comment, index) => {
             return `<li class="comment" data-index = "${index}">
@@ -148,26 +149,8 @@ const renderComments = () => {
 
     initEventListener();
     addCommentListener();
+
 }
-// renderComments();
-
-
-// function validateForm(arrayValue) {
-//     for (let i = 0; i < arrayValue.length; i++) {
-
-//         if (arrayValue[i].value == "") {
-//             if (i == 0) {
-//                 inputName.classList.add('error');
-//                 inputName.placeholder = PLACEHOLDER_NAME__ERROR;
-//             } else {
-//                 inputComment.classList.add('error');
-//                 inputComment.placeholder = PLACEHOLDER_COMMENT__ERROR;
-//             }
-//         }
-//     }
-// }
-
-
 
 // Доп задание: Блокирование кнопки при незаполненных полях
 for (let i = 0; i < arrayValue.length; i++) {
@@ -253,7 +236,7 @@ button.addEventListener('click', (event) => {
                     };
                 })
 
-                renderComments();
+                renderComments(commentsObject);
             })
             .then(() => {
                 parentElement.removeChild(CommentAddPreview);
