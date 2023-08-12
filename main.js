@@ -1,17 +1,12 @@
-const PLACEHOLDER_NAME = "Введите ваше имя";
-const PLACEHOLDER_COMMENT = "Введите ваш коментарий";
-const PLACEHOLDER_NAME__ERROR = "Поле имени обязательно для заполнения";
-const PLACEHOLDER_COMMENT__ERROR = "Поле комментария обязательно для заполнения";
+import {
+    PLACEHOLDER_NAME, PLACEHOLDER_COMMENT,
+    PLACEHOLDER_NAME__ERROR, PLACEHOLDER_COMMENT__ERROR,
+    inputName, inputComment, button, formText, buttonRemove,
+    comments, arrayValue
+} from "./vars.js";
 
-const inputName = document.querySelector('.add-form-name');
-const inputComment = document.querySelector('.add-form-text');
-const button = document.querySelector('.add-form-button');
-const formText = document.querySelector('.add-form');
-const buttonRemove = document.querySelector('.remove-form-button');
-const comments = document.querySelector('.comments');
-let arrayValue = [inputName, inputComment];
+
 let commentsObject;
-
 let CommentPreview = document.createElement('div');
 CommentPreview.textContent = 'Комментарии загружаются';
 comments.appendChild(CommentPreview)
@@ -59,7 +54,7 @@ const fetchPromise = fetch(
     })
 
 function validateForm(arrayValue) {
-    
+
     for (let i = 0; i < arrayValue.length; i++) {
         if (arrayValue[i].value == "") {
             if (i == 0) {
