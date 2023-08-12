@@ -5,22 +5,13 @@ import {
     comments, arrayValue
 } from "./vars.js";
 
+import formatTime from "./RenderTime.js";
+
 
 let commentsObject;
 let CommentPreview = document.createElement('div');
 CommentPreview.textContent = 'Комментарии загружаются';
 comments.appendChild(CommentPreview)
-
-function formatTime(time) {
-    const date = new Date(time);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString().slice(-2);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${day}.${month}.${year} ${hours}:${minutes}`;
-}
 
 const fetchPromise = fetch(
     "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
@@ -67,6 +58,7 @@ function validateForm(arrayValue) {
         }
     }
 }
+
 // Функционал простановки лайка
 const initEventListener = () => {
     const likeButtonElement = document.querySelectorAll(".likes")
