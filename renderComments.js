@@ -28,8 +28,8 @@ const renderComments = (commentsObject) => {
 
     comments.innerHTML = commentsHtml;
 
-    initEventListener();
-    addCommentListener();
+    initEventListener(commentsObject);
+    addCommentListener(commentsObject);
 
 }
 

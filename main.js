@@ -6,45 +6,33 @@ import {
 } from "./vars.js";
 import formatTime from "./renderTime.js";
 import renderComments from "./renderComments.js";
-import {fetchPromise} from "./api.js";
+import { getCommentsFromAPI, postCommentsFromAPI }from "./api.js";
 
 export {initEventListener, addCommentListener};
 
-let commentsObject;
+let commentsObject = [];
 let CommentPreview = document.createElement('div');
 CommentPreview.textContent = 'Комментарии загружаются';
 comments.appendChild(CommentPreview)
 
-// const fetchPromise = fetch(
-//     "https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
-//     {
-//         method: "GET",
-//     }
-// ).then((response) => {
-//     if (response.status === 500) {
-//         alert('Сервер сломался, попробуй позже')
-//     } else {
-//         return response.json();
-//     }
-// })
-//     .then((responseData) => {
+getCommentsFromAPI().then((responseData) => {
 
-//         commentsObject = responseData.comments.map(data => {
-//             return {
-//                 name: data.author.name,
-//                 date: formatTime(data.date),
-//                 text: data.text,
-//                 like: data.isLiked,
-//                 likeCount: data.likes,
-//                 likeClass: "like-button"
-//             };
-//         })
-//         renderComments(commentsObject);
-//     })
-//     .catch((error) => {
-//         console.error(error)
-//         alert('Кажется, у вас сломался интернет, попробуйте позже')
-//     })
+        commentsObject = responseData.comments.map(data => {
+            return {
+                name: data.author.name,
+                date: formatTime(data.date),
+                text: data.text,
+                like: data.isLiked,
+                likeCount: data.likes,
+                likeClass: "like-button"
+            };
+        })
+        renderComments(commentsObject);
+    })
+    .catch((error) => {
+        console.error(error)
+        alert('Кажется, у вас сломался интернет, попробуйте позже')
+    })
 
 function validateForm(arrayValue) {
 
@@ -63,7 +51,7 @@ function validateForm(arrayValue) {
 
 
 // Функционал простановки лайка
-const initEventListener = () => {
+const initEventListener = (commentsObject) => {
     const likeButtonElement = document.querySelectorAll(".likes")
     const likeButtons = document.querySelectorAll(".like-button")
 
@@ -74,7 +62,6 @@ const initEventListener = () => {
             event.stopPropagation();
 
             const index = likeButton.dataset.index;
-
             if (commentsObject[index].like) {
                 commentsObject[index].like = false;
                 --commentsObject[index].likeCount;
@@ -92,7 +79,7 @@ const initEventListener = () => {
 
 
 // Функционал ответа на комментрарии
-const addCommentListener = () => {
+const addCommentListener = (commentsObject) => {
 
     const commentsElement = document.querySelectorAll(".comment");
 
@@ -155,36 +142,8 @@ button.addEventListener('click', (event) => {
         let parentElement = CommentAddPreview.parentNode;
 
         formText.classList.add('hide');
-        fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments", {
-            method: "POST",
-            body: JSON.stringify({
-                "text": inputComment.value,
-                "name": inputName.value,
-                forceError: true
-            }),
-        }).then((response) => {
-            if (response.status === 400) {
-                alert('Имя и комментарий не должны  быть короче трёх символов')
-                inputName.value = textName;
-                inputComment.value = textComment;
-                // console.log(inputContent())
-            } else if (response.status === 500) {
-                alert('Сервер сломался, попробуй позже')
-                inputName.value = textName;
-                inputComment.value = textComment;
-            } else {
-                return response.json();
-            }
-        })
-            .then((responseData) => {
-                return fetch("https://wedev-api.sky.pro/api/v1/:Alex-grishchenko_hw7/comments",
-                    {
-                        method: "GET",
-                    });
-            })
-            .then((response) => {
-                return response.json();
-            })
+        postCommentsFromAPI().then((responseData) => {
+                return postCommentsFromAPI()})
             .then((responseData) => {
                 commentsObject = responseData.comments.map(data => {
                     return {
