@@ -28,6 +28,7 @@ function postCommentsFromAPI() {
         body: JSON.stringify({
             "text": inputComment.value,
             "name": inputName.value,
+            forceError: false,
         }),
     }).then((response) => {
         if (response.status === 400) {
