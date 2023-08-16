@@ -143,7 +143,7 @@ button.addEventListener('click', (event) => {
 
         formText.classList.add('hide');
         postCommentsFromAPI().then((responseData) => {
-                return postCommentsFromAPI()})
+                return getCommentsFromAPI()})
             .then((responseData) => {
                 commentsObject = responseData.comments.map(data => {
                     return {
